@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edward Currell — Web Design</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ── THEMES ── */
+[data-theme="dark"] {
+  --bg:      #0a0908;
+  --surface: #131110;
+  --surface2:#1c1917;
+  --ink:     #f0ebe0;
+  --muted:   #7a7268;
+  --line:    rgba(240,235,224,0.08);
+  --accent:  #e85c3a;
+  --tag-bg:  rgba(240,235,224,0.05);
+  --tag-fg:  #9a9288;
+  --free-bg: rgba(76,175,130,0.08);
+  --free-fg: #4caf82;
+  --free-border: rgba(76,175,130,0.2);
+}
+[data-theme="light"] {
+  --bg:      #faf7f2;
+  --surface: #f2ede4;
+  --surface2:#e8e2d6;
+  --ink:     #111009;
+  --muted:   #7a7268;
+  --line:    rgba(17,16,9,0.1);
+  --accent:  #d44a28;
+  --tag-bg:  rgba(17,16,9,0.05);
+  --tag-fg:  #7a7268;
+  --free-bg: rgba(46,143,94,0.07);
+  --free-fg: #2e8f5e;
+  --free-border: rgba(46,143,94,0.2);
+}
+
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  line-height: 1.7;
+  overflow-x: hidden;
+  transition: background .3s, color .3s;
+}
+
+/* grain */
+body::after {
+  content:'';
+  position:fixed; inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none; z-index:9997;
+}
+
+/* ── THEME TOGGLE ── */
+.theme-toggle {
+  position: fixed;
+  top: 1.1rem; right: 1.4rem;
+  z-index: 9999;
+  display: flex;
+  background: var(--surface2);
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  padding: .25rem; gap: .1rem;
+  backdrop-filter: blur(12px);
+}
+.theme-toggle button {
+  background: none; border: none; cursor: pointer;
+  width: 2rem; height: 2rem; border-radius: 99px;
+  color: var(--muted);
+  display: flex; align-items: center; justify-content: center;
+  transition: background .2s, color .2s;
+}
+.theme-toggle button.on { background: var(--bg); color: var(--ink); box-shadow: 0 1px 6px rgba(0,0,0,.2); }
+.theme-toggle svg { width: .95rem; height: .95rem; fill: currentColor; }
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 998;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem 5vw;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+  transition: background .3s, border-color .3s;
+}
+.nav-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem; letter-spacing: .12em;
+  color: var(--ink); text-decoration: none;
+}
+.nav-logo span { color: var(--accent); }
+.nav-links { display: flex; gap: 2rem; list-style: none; }
+.nav-links a {
+  font-size: .75rem; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--muted); text-decoration: none;
+  font-family: 'DM Mono', monospace;
+  transition: color .2s;
+}
+.nav-links a:hover { color: var(--accent); }
+.nav-cta {
+  background: var(--accent); color: #fff !important;
+  padding: .4rem 1rem; border-radius: 3px; font-weight: 500;
+}
+.nav-cta:hover { opacity: .85; }
+@media(max-width:640px){ .nav-links { display: none; } }
+
+/* ── HERO ── */
+#hero {
+  min-height: 100svh;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 8rem 5vw 5rem;
+  position: relative; overflow: hidden;
+}
+.hero-bg-text {
+  position: absolute; top: 50%; left: -2vw;
+  transform: translateY(-50%);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(10rem, 22vw, 26rem);
+  color: var(--surface2);
+  line-height: 1; pointer-events: none; user-select: none;
+  letter-spacing: -.02em; white-space: nowrap;
+  transition: color .3s;
+}
+.hero-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: .7rem; letter-spacing: .2em; color: var(--accent);
+  text-transform: uppercase; margin-bottom: 1.5rem;
+  opacity: 0; animation: up .6s .1s ease forwards;
+}
+.hero-headline {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(3.5rem, 10vw, 9rem);
+  line-height: .95; letter-spacing: .02em;
+  margin-bottom: 1.8rem;
+  opacity: 0; animation: up .7s .25s ease forwards;
+}
+.hero-headline em {
+  font-style: normal; color: var(--accent);
+  font-family: 'Instrument Serif', serif;
+}
+.hero-sub {
+  max-width: 50ch; font-size: 1rem; color: var(--muted);
+  margin-bottom: 2.5rem; line-height: 1.75;
+  opacity: 0; animation: up .7s .4s ease forwards;
+}
+.hero-actions {
+  display: flex; gap: 1rem; flex-wrap: wrap;
+  opacity: 0; animation: up .7s .55s ease forwards;
+}
+.btn {
+  display: inline-flex; align-items: center; gap: .5rem;
+  padding: .75rem 1.8rem; font-size: .85rem; font-weight: 500;
+  letter-spacing: .05em; border-radius: 4px; cursor: pointer;
+  text-decoration: none; border: none;
+  font-family: 'DM Sans', sans-serif;
+  transition: opacity .2s, transform .15s;
+}
+.btn:hover { opacity: .82; transform: translateY(-1px); }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-ghost {
+  background: none; color: var(--ink); border: 1px solid var(--line);
+}
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); opacity: 1; }
+
+/* ── SECTION SHELL ── */
+section { padding: 5.5rem 5vw; }
+section + section { border-top: 1px solid var(--line); }
+.section-label {
+  font-family: 'DM Mono', monospace;
+  font-size: .63rem; letter-spacing: .22em; color: var(--accent);
+  text-transform: uppercase; margin-bottom: .7rem;
+  display: flex; align-items: center; gap: .8rem;
+}
+.section-label::before { content:''; width: 1.8rem; height: 1px; background: var(--accent); }
+.section-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  letter-spacing: .04em; line-height: 1; margin-bottom: .8rem;
+}
+.section-title em { font-family: 'Instrument Serif', serif; font-style: italic; color: var(--accent); }
+.section-intro { color: var(--muted); max-width: 54ch; font-size: .9rem; margin-bottom: 3rem; }
+
+/* ── SERVICES GRID ── */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+.service-card {
+  background: var(--bg);
+  padding: 2rem 1.6rem;
+  position: relative; overflow: hidden;
+  transition: background .2s;
+}
+.service-card::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0;
+  height: 2px; width: 0;
+  background: var(--accent);
+  transition: width .3s ease;
+}
+.service-card:hover { background: var(--surface); }
+.service-card:hover::after { width: 100%; }
+
+.service-num {
+  font-family: 'DM Mono', monospace;
+  font-size: .6rem; letter-spacing: .15em;
+  color: var(--accent); margin-bottom: 1rem; display: block;
+}
+.service-name {
+  font-weight: 500; font-size: 1rem;
+  color: var(--ink); margin-bottom: .5rem; line-height: 1.3;
+}
+.service-desc {
+  font-size: .82rem; color: var(--muted); line-height: 1.65;
+}
+
+/* free badge on the last card */
+.service-card.free-card {
+  border: 1px solid var(--free-border);
+  background: var(--free-bg);
+}
+.service-card.free-card:hover { background: var(--free-bg); }
+.free-badge {
+  display: inline-block;
+  font-family: 'DM Mono', monospace;
+  font-size: .6rem; letter-spacing: .12em;
+  color: var(--free-fg);
+  background: var(--free-bg);
+  border: 1px solid var(--free-border);
+  padding: .15rem .5rem; border-radius: 2px;
+  margin-bottom: .8rem;
+  text-transform: uppercase;
+}
+.service-small {
+  font-size: .72rem; color: var(--muted); margin-top: .7rem;
+  line-height: 1.55; font-style: italic;
+}
+
+/* ── CONTACT ── */
+#contact { background: var(--surface); transition: background .3s; }
+.contact-inner {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 5rem; align-items: start;
+}
+.contact-note {
+  color: var(--muted); font-size: .88rem; line-height: 1.75; margin-bottom: 2rem;
+}
+.contact-note strong { color: var(--ink); display: block; font-size: 1rem; margin-bottom: .4rem; }
+.contact-detail { display: flex; flex-direction: column; gap: .9rem; }
+.contact-item { display: flex; align-items: baseline; gap: 1rem; }
+.contact-item-label {
+  font-family: 'DM Mono', monospace; font-size: .62rem;
+  letter-spacing: .12em; color: var(--muted); text-transform: uppercase;
+  min-width: 4.5rem; flex-shrink: 0;
+}
+.contact-item-value { font-size: .9rem; color: var(--ink); }
+.contact-item-value a { color: var(--accent); text-decoration: none; }
+.contact-item-value a:hover { text-decoration: underline; }
+
+.form-field label {
+  font-family: 'DM Mono', monospace; font-size: .62rem;
+  letter-spacing: .14em; color: var(--muted); text-transform: uppercase;
+}
+.form-field input,
+.form-field select,
+.form-field textarea {
+  background: var(--bg); border: 1px solid var(--line);
+  color: var(--ink); padding: .75rem 1rem;
+  font-family: 'DM Sans', sans-serif; font-size: .88rem;
+  border-radius: 3px; outline: none;
+  transition: border-color .2s; resize: vertical;
+}
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus { border-color: var(--accent); }
+.form-field select option { background: var(--bg); }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--line);
+  padding: 1.8rem 5vw;
+  display: flex; justify-content: space-between; align-items: center;
+  font-family: 'DM Mono', monospace; font-size: .66rem;
+  color: var(--muted); letter-spacing: .08em;
+  flex-wrap: wrap; gap: .5rem;
+  transition: border-color .3s;
+}
+footer span { color: var(--accent); }
+
+/* ── REVEAL ── */
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+.reveal.visible { opacity: 1; transform: none; }
+
+/* ── KEYFRAMES ── */
+@keyframes up {
+  from { opacity:0; transform:translateY(18px); }
+  to   { opacity:1; transform:none; }
+}
+
+/* ── MOBILE ── */
+@media(max-width:640px){
+  #hero { padding: 7rem 5vw 4rem; }
+  .hero-bg-text { font-size: 42vw; opacity:.5; }
+  .contact-inner { grid-template-columns: 1fr; gap: 3rem; }
+  .form-row { grid-template-columns: 1fr; }
+  footer { flex-direction: column; text-align: center; }
+  section { padding: 4rem 5vw; }
+}
+@media(min-width:641px) and (max-width:900px){
+  .contact-inner { grid-template-columns: 1fr; gap: 3rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- THEME TOGGLE -->
+<div class="theme-toggle">
+  <button id="btn-dark" class="on" aria-label="Dark mode">
+    <svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg>
+  </button>
+  <button id="btn-light" aria-label="Light mode">
+    <svg viewBox="0 0 24 24"><path d="M12 4a1 1 0 011 1v1a1 1 0 11-2 0V5a1 1 0 011-1zm0 13a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zm8-5a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5 12a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zm12.657-6.243a1 1 0 010 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zm-9.9 9.9a1 1 0 010 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zm9.9 2.121a1 1 0 01-1.414 0l-.707-.707a1 1 0 011.414-1.414l.707.707a1 1 0 010 1.414zM7.05 7.05a1 1 0 01-1.414 0l-.707-.707A1 1 0 016.343 4.93l.707.707a1 1 0 010 1.414zM12 8a4 4 0 110 8 4 4 0 010-8z"/></svg>
+  </button>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="#hero" class="nav-logo">Edward<span>.</span></a>
+  <ul class="nav-links">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#contact" class="nav-cta">Contact Me</a></li>
+  </ul>
+</nav>
+
+<!-- ══════ HERO ══════ -->
+<section id="hero">
+  <div class="hero-bg-text" aria-hidden="true">WEB</div>
+  <div class="hero-eyebrow">Web Design &middot; Wales &amp; Remote</div>
+  <h1 class="hero-headline">Clean Websites,<br><em>Built Right</em></h1>
+  <p class="hero-sub">
+    I design and build modern, mobile-friendly websites for small businesses. Fast, simple, and focused on doing the job well.
+  </p>
+  <div class="hero-actions">
+    <a href="#contact" class="btn btn-primary">Contact Me &rarr;</a>
+    <a href="#services" class="btn btn-ghost">What I Can Do For You</a>
+  </div>
+</section>
+
+<!-- ══════ SERVICES ══════ -->
+<section id="services">
+  <div class="section-label">What I Do</div>
+  <h2 class="section-title">What I Can<br>Do For <em>You</em></h2>
+  <p class="section-intro">Frontend web design — clean, fast, and built to work on every screen. No databases or login systems, just great-looking sites that load quickly.</p>
+
+  <div class="services-grid reveal">
+
+    <div class="service-card">
+      <span class="service-num">01</span>
+      <div class="service-name">Mobile Redesign</div>
+      <div class="service-desc">
+        Already have a website but it looks broken on phones? I'll rebuild the layout so it works properly on every screen size.
+      </div>
+    </div>
+
+    <div class="service-card">
+      <span class="service-num">02</span>
+      <div class="service-name">Website Redesign</div>
+      <div class="service-desc">
+        Outdated site that no longer reflects your business? I'll give it a fresh, modern design while keeping everything you need.
+      </div>
+    </div>
+
+    <div class="service-card">
+      <span class="service-num">03</span>
+      <div class="service-name">Landing Pages</div>
+      <div class="service-desc">
+        A clean single-page site that tells people who you are, what you do, and how to get in touch. Good for new businesses or a simple web presence.
+      </div>
+    </div>
+
+    <div class="service-card free-card">
+      <span class="free-badge">Possible Free Domain</span>
+      <div class="service-name">Hosted on GitHub Pages</div>
+      <div class="service-desc">
+        If you're happy to host your site through GitHub Pages, you may be able to get a free <em>yourname.github.io</em> address — no hosting fees.
+      </div>
+      <p class="service-small">
+        A custom domain (e.g. yourbusiness.co.uk) is a separate cost paid to a registrar — typically around &pound;10&ndash;15/year. GitHub Pages hosting itself is free. I handle the setup.
+      </p>
+    </div>
+
+  </div>
+
+  <p style="margin-top:1.5rem; font-size:.78rem; color:var(--muted); font-family:'DM Mono',monospace; letter-spacing:.04em;">
+    Note &mdash; I build frontend only. That means no backends, no user logins, no databases, and no e-commerce. Just clean, well-built HTML &amp; CSS sites.
+  </p>
+</section>
+
+<!-- ══════ CONTACT ══════ -->
+<section id="contact">
+  <div class="contact-inner">
+    <div>
+      <div class="section-label">Get In Touch</div>
+      <h2 class="section-title">Let's Talk<br>About Your <em>Site</em></h2>
+      <p class="contact-note">
+        <strong>No obligation — just a conversation</strong>
+        Tell me what you're after and I'll let you know if I can help, how long it would take, and what it would cost.
+      </p>
+      <div class="contact-detail">
+        <div class="contact-item">
+          <span class="contact-item-label">Email</span>
+          <span class="contact-item-value"><a href="mailto:edwardcurrell0@gmail.com">edwardcurrell0@gmail.com</a></span>
+        </div>
+        <div class="contact-item">
+          <span class="contact-item-label">Phone</span>
+          <span class="contact-item-value"><a href="tel:+447494861329">+44 7494 861329</a></span>
+        </div>
+        <div class="contact-item">
+          <span class="contact-item-label">Based</span>
+          <span class="contact-item-value">Crickhowell, Wales &mdash; remote UK-wide</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal" style="padding-top:.5rem;">
+      <a href="mailto:edwardcurrell0@gmail.com" class="btn btn-primary">Email Me &rarr;</a>
+      <p style="margin-top:1rem;font-size:.78rem;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:.05em;">I'll usually reply within a day.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>Edward Currell &mdash; <span>Web Design</span></div>
+  <div>Wales, UK &middot; Remote UK-wide</div>
+  <div><a href="mailto:edwardcurrell0@gmail.com" style="color:var(--accent);text-decoration:none;">edwardcurrell0@gmail.com</a></div>
+</footer>
+
+<script>
+// ── THEME ──
+const html = document.documentElement;
+const btnD = document.getElementById('btn-dark');
+const btnL = document.getElementById('btn-light');
+function setTheme(t) {
+  html.setAttribute('data-theme', t);
+  try { localStorage.setItem('ec-theme', t); } catch(e) {}
+  btnD.classList.toggle('on', t === 'dark');
+  btnL.classList.toggle('on', t === 'light');
+}
+let saved; try { saved = localStorage.getItem('ec-theme'); } catch(e) {}
+setTheme(saved || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'));
+btnD.addEventListener('click', () => setTheme('dark'));
+btnL.addEventListener('click', () => setTheme('light'));
+
+// ── REVEAL ──
+const ro = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    e.target.classList.add('visible');
+    [...e.target.children].forEach((c, i) => c.style.transitionDelay = (i * 0.07) + 's');
+    ro.unobserve(e.target);
+  });
+}, { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+
+
+</script>
+</body>
+</html>
